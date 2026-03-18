@@ -246,7 +246,8 @@ Deno.serve(async (req: Request) => {
 
     const text = data.choices?.[0]?.message?.content;
     if (!text) {
-      return new Response(JSON.stringify({ error: 'Groq response empty', raw: data }), {
+      const groqError = data.error?.message || data.error?.type || JSON.stringify(data);
+      return new Response(JSON.stringify({ error: 'Groq error: ' + groqError }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

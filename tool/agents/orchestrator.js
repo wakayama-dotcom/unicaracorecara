@@ -58,7 +58,8 @@ async function callAgent(agentType, userInput) {
   });
 
   if (!res.ok) {
-    throw new Error(agentType + ' のレスポンスエラー: ' + res.status);
+    const errData = await res.json().catch(function () { return {}; });
+    throw new Error(agentType + ' のレスポンスエラー: ' + res.status + ' / ' + (errData.error || ''));
   }
 
   const data = await res.json();
