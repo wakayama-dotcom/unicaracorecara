@@ -492,24 +492,83 @@
     }
   }
 
+  function renderNogakiCaseStudy() {
+    return (
+      '<div class="case-study-card">' +
+        '<div class="case-study-header">' +
+          '<span class="case-study-badge">成功事例</span>' +
+          '<span class="case-study-name">野々垣さん（Unicaraロールモデル）</span>' +
+        '</div>' +
+        '<p class="case-study-lead">転職＋副業を組み合わせて、社会人5年目に年収2,000万円・海外生活を実現。</p>' +
+        '<div class="case-study-timeline">' +
+          '<div class="timeline-item">' +
+            '<span class="timeline-dot">1年目</span>' +
+            '<div class="timeline-body">' +
+              '<strong>年収290万円の過酷な職場で限界を感じる</strong>' +
+              '<p>朝7時〜深夜の激務。FPとの出会いで「人生の逆算」を行い、<em>時間を確保できる環境</em>への戦略的転職を決意。副業を夏から開始し、初月15万円を達成。</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="timeline-item">' +
+            '<span class="timeline-dot">2年目</span>' +
+            '<div class="timeline-body">' +
+              '<strong>「コトを売る」営業スキルを転職先で習得</strong>' +
+              '<p>副業と本業を並走。「なぜ断られたか」を徹底的に書き出し、改善を繰り返す。</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="timeline-item">' +
+            '<span class="timeline-dot">3年目</span>' +
+            '<div class="timeline-body">' +
+              '<strong>独立。月50万円の安定利益を達成</strong>' +
+              '<p>量をこなしながら成功者に教えを乞い、泥臭い積み上げで1年後に月利50万を安定化。</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="timeline-item">' +
+            '<span class="timeline-dot">4年目</span>' +
+            '<div class="timeline-body">' +
+              '<strong>年収1,200万円。組織として成長</strong>' +
+              '<p>同じ目標を持つ仲間と本気で向き合い、成功者を徹底的に模倣し続けた結果。</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="timeline-item timeline-item-last">' +
+            '<span class="timeline-dot">5年目</span>' +
+            '<div class="timeline-body">' +
+              '<strong>年収2,000万円超。2ヶ月に1回は海外へ</strong>' +
+              '<p>「自分一人でやった方が早い」というエゴを捨て、業務をマニュアル化して組織をスケール。仲間も同様のライフスタイルを実現。</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="case-study-cta">あなたも、<em>転職と副業の組み合わせ</em>でこの軌道を歩めます。まず一歩、話してみませんか？</p>' +
+      '</div>'
+    );
+  }
+
   function renderAgentResults(result) {
     const container = getEl('option-cards');
     if (!container || !result) return;
 
     const optionsHtml = (result.options || []).map(function (opt) {
       const isRec = opt.recommended;
+      // AIが "UGS副業" や "UGS" と出力する場合は "副業" に正規化
+      function fixUGS(s) {
+        return (s || '')
+          .replace(/転職[＋+＆&]UGS副業?/g, '転職＋副業')
+          .replace(/現職[＋+＆&]UGS副業?/g, '現職＋副業')
+          .replace(/UGS副業/g, '副業')
+          .replace(/UGS/g, '副業');
+      }
+      const title = fixUGS(opt.title || opt.type || '');
       const rationaleHtml = (
         '<div class="agent-rationale-grid">' +
-          '<div class="rationale-agent-item"><span class="agent-tag career">💼 キャリア戦略家</span><p>' + escapeHtml(opt.rationale.career || '') + '</p></div>' +
-          '<div class="rationale-agent-item"><span class="agent-tag life">🏠 ライフ設計士</span><p>' + escapeHtml(opt.rationale.life || '') + '</p></div>' +
-          '<div class="rationale-agent-item"><span class="agent-tag income">💰 収入アナリスト</span><p>' + escapeHtml(opt.rationale.income || '') + '</p></div>' +
-          '<div class="rationale-agent-item"><span class="agent-tag psych">🧠 心理分析官</span><p>' + escapeHtml(opt.rationale.psychology || '') + '</p></div>' +
+          '<div class="rationale-agent-item"><span class="agent-tag career">💼 キャリア戦略家</span><p>' + escapeHtml(fixUGS(opt.rationale.career)) + '</p></div>' +
+          '<div class="rationale-agent-item"><span class="agent-tag life">🏠 ライフ設計士</span><p>' + escapeHtml(fixUGS(opt.rationale.life)) + '</p></div>' +
+          '<div class="rationale-agent-item"><span class="agent-tag income">💰 収入アナリスト</span><p>' + escapeHtml(fixUGS(opt.rationale.income)) + '</p></div>' +
+          '<div class="rationale-agent-item"><span class="agent-tag psych">🧠 心理分析官</span><p>' + escapeHtml(fixUGS(opt.rationale.psychology)) + '</p></div>' +
         '</div>'
       );
-      return (
+      const card = (
         '<div class="option-card' + (isRec ? ' option-card-recommended' : '') + '">' +
           (isRec ? '<div class="recommended-badge">推奨</div>' : '') +
-          '<h3 class="option-card-title">' + escapeHtml(opt.title || opt.type) + '</h3>' +
+          '<h3 class="option-card-title">' + escapeHtml(title) + '</h3>' +
           '<p class="option-summary">' + escapeHtml(opt.summary || '') + '</p>' +
           '<div class="option-card-rationale">' +
             '<div class="option-card-rationale-title">4人のエージェントからの根拠</div>' +
@@ -521,6 +580,9 @@
           '</div>' +
         '</div>'
       );
+      // 転職＋副業の選択肢の直後に成功事例を挿入（推奨カードのみ）
+      const showCase = isRec && title.indexOf('転職') !== -1;
+      return card + (showCase ? renderNogakiCaseStudy() : '');
     }).join('');
 
     const handover = result.consultantHandover || {};
