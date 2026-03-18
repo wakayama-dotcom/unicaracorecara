@@ -225,24 +225,36 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + apiKey,
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
-        temperature: 0.7,
-        max_tokens: agentType === 'synthesizer' ? 4000 : 1500,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `以下のユーザーデータを分析してください:\n\n${JSON.stringify(userInput, null, 2)}` }
-        ],
-      }),
+    const requestBody = JSON.stringify({
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.7,
+      max_tokens: agentType === 'synthesizer' ? 2500 : 1200,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `以下のユーザーデータを分析してください:\n\n${JSON.stringify(userInput, null, 2)}` }
+      ],
     });
 
-    const data = await response.json();
+    // レート制限時は最大3回リトライ
+    let data: any;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiKey,
+        },
+        body: requestBody,
+      });
+      data = await response.json();
+      if (data.choices?.[0]?.message?.content) break;
+      // 429レート制限の場合は待ってリトライ
+      if (data.error?.type === 'tokens' || (data.error?.message || '').includes('Rate limit')) {
+        await new Promise(resolve => setTimeout(resolve, 8000));
+      } else {
+        break;
+      }
+    }
 
     const text = data.choices?.[0]?.message?.content;
     if (!text) {
