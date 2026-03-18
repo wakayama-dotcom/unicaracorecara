@@ -499,6 +499,10 @@
           '<span class="case-study-badge">成功事例</span>' +
           '<span class="case-study-name">野々垣さん（Unicaraロールモデル）</span>' +
         '</div>' +
+        '<div class="case-study-photo-wrap">' +
+          '<img src="nogaki.jpeg" alt="野々垣さん" class="case-study-photo">' +
+          '<div class="case-study-photo-caption">社会人5年目・グランドキャニオンにて</div>' +
+        '</div>' +
         '<p class="case-study-lead">転職＋副業を組み合わせて、社会人5年目に年収2,000万円・海外生活を実現。</p>' +
         '<div class="case-study-timeline">' +
           '<div class="timeline-item">' +
@@ -580,9 +584,8 @@
           '</div>' +
         '</div>'
       );
-      // 転職＋副業の選択肢の直後に成功事例を挿入（推奨カードのみ）
-      const showCase = isRec && title.indexOf('転職') !== -1;
-      return card + (showCase ? renderNogakiCaseStudy() : '');
+      // 推奨カード（転職＋副業）の直後に成功事例を挿入
+      return card + (isRec ? renderNogakiCaseStudy() : '');
     }).join('');
 
     const handover = result.consultantHandover || {};
