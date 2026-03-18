@@ -231,7 +231,7 @@ Deno.serve(async (req: Request) => {
     const requestBody = JSON.stringify({
       model: 'llama-3.1-8b-instant',
       temperature: 0.7,
-      max_tokens: agentType === 'synthesizer' ? 2500 : 1200,
+      max_tokens: agentType === 'synthesizer' ? 2500 : 700,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `以下のユーザーデータを分析してください:\n\n${JSON.stringify(userInput, null, 2)}` }
@@ -252,8 +252,8 @@ Deno.serve(async (req: Request) => {
       data = await response.json();
       if (data.choices?.[0]?.message?.content) break;
       // 429レート制限の場合は待ってリトライ
-      if (data.error?.type === 'tokens' || (data.error?.message || '').includes('Rate limit')) {
-        await new Promise(resolve => setTimeout(resolve, 8000));
+      if ((data.error?.message || '').includes('Rate limit') || (data.error?.message || '').includes('rate_limit')) {
+        await new Promise(resolve => setTimeout(resolve, 20000));
       } else {
         break;
       }
