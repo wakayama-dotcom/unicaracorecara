@@ -563,8 +563,9 @@
       // 根拠テキストに改行を入れて読みやすくする（／で理想/現状を分割、→の前で改行）
       function formatRationale(s) {
         return escapeHtml(fixUGS(s))
-          .replace(/[／/]/g, '<br>')
-          .replace(/→/g, '<br>→');
+          .replace(/\s*[／/]\s*/g, '<br>')
+          .replace(/\s*→\s*/g, '<br>→')
+          .replace(/(<br>\s*){2,}/g, '<br>');
       }
       const title = fixUGS(opt.title || opt.type || '');
       const rationaleHtml = (
@@ -649,15 +650,18 @@
         return '<span class="history-priority-item"><strong>' + (i + 1) + '位</strong> ' + area + '（' + score + '点/' + gap + '）</span>';
       }).join('');
 
+      const reasons = s.reasons || {};
       const detailRows = (s.priority_order || []).map(function (area) {
         const score = scores[area] || '—';
         const ideal = ideals[area] || '—';
+        const reason = reasons[area] || '—';
         const imp = improvements[area] || '—';
         return (
           '<div class="history-detail-row">' +
             '<div class="history-detail-area">' + area + '（' + score + '点）</div>' +
             '<div class="history-detail-item"><span>理想：</span>' + escapeHtml(ideal) + '</div>' +
-            '<div class="history-detail-item"><span>改善：</span>' + escapeHtml(imp) + '</div>' +
+            '<div class="history-detail-item"><span>現状：</span>' + escapeHtml(reason) + '</div>' +
+            '<div class="history-detail-item"><span>改善策：</span>' + escapeHtml(imp) + '</div>' +
           '</div>'
         );
       }).join('');
@@ -670,7 +674,7 @@
           '</div>' +
           '<div class="history-item-summary">' + summaryItems + '</div>' +
           '<button type="button" class="history-toggle">詳細を見る ▼</button>' +
-          '<div class="history-item-detail" hidden>' + detailRows + '</div>' +
+          '<div class="history-item-detail" style="display:none">' + detailRows + '</div>' +
         '</div>'
       );
     }).join('');
@@ -822,8 +826,8 @@
           btn.addEventListener('click', function () {
             const detail = btn.nextElementSibling;
             if (detail) {
-              const isHidden = detail.hidden;
-              detail.hidden = !isHidden;
+              const isHidden = detail.style.display === 'none' || detail.style.display === '';
+              detail.style.display = isHidden ? 'flex' : 'none';
               btn.textContent = isHidden ? '詳細を閉じる ▲' : '詳細を見る ▼';
             }
           });
