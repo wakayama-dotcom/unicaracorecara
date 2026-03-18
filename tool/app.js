@@ -560,11 +560,11 @@
           .replace(/UGS副業/g, '副業')
           .replace(/UGS/g, '副業');
       }
-      // 根拠テキストに改行を入れて読みやすくする（「→」「。」の後で改行）
+      // 根拠テキストに改行を入れて読みやすくする
       function formatRationale(s) {
         return escapeHtml(fixUGS(s))
-          .replace(/→\s*/g, '→\n')
-          .replace(/。(?=[^\n])/g, '。\n');
+          .replace(/／/g, '\n')
+          .replace(/→\s*/g, '\n→');
       }
       const title = fixUGS(opt.title || opt.type || '');
       const rationaleHtml = (
