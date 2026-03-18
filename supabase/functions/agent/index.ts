@@ -232,7 +232,7 @@ Deno.serve(async (req: Request) => {
         'Authorization': 'Bearer ' + apiKey,
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama-3.1-8b-instant',
         temperature: 0.7,
         max_tokens: agentType === 'synthesizer' ? 4000 : 1500,
         messages: [
