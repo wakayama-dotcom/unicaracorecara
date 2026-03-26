@@ -207,8 +207,8 @@ Deno.serve(async (req: Request) => {
     const text: string = event.message.text.trim();
     const replyToken: string = event.replyToken;
 
-    // typeId直接形式: SHINDAN-{typeId} (例: SHINDAN-earner)
-    const typeIdMatch = text.match(/^SHINDAN-([a-z]+)$/i);
+    // typeId直接形式: SHINDAN-{typeId} または text=SHINDAN-{typeId}
+    const typeIdMatch = text.match(/^(?:text=)?SHINDAN-([a-z]+)$/i);
     if (typeIdMatch) {
       await sendReply(replyToken, buildReplyMessage(typeIdMatch[1].toLowerCase()), channelAccessToken);
       continue;
