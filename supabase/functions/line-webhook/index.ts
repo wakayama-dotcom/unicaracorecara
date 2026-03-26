@@ -207,7 +207,14 @@ Deno.serve(async (req: Request) => {
     const text: string = event.message.text.trim();
     const replyToken: string = event.replyToken;
 
-    // 新形式: SHINDAN-XXXXXX トークン
+    // typeId直接形式: SHINDAN-{typeId} (例: SHINDAN-earner)
+    const typeIdMatch = text.match(/^SHINDAN-([a-z]+)$/i);
+    if (typeIdMatch) {
+      await sendReply(replyToken, buildReplyMessage(typeIdMatch[1].toLowerCase()), channelAccessToken);
+      continue;
+    }
+
+    // トークン形式: SHINDAN-{6文字英数字} (Supabase lookup)
     const tokenMatch = text.match(/^SHINDAN-([A-Z0-9]{6})$/i);
     if (tokenMatch) {
       const token = tokenMatch[1].toUpperCase();
