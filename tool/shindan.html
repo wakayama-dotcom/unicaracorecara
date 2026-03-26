@@ -583,7 +583,7 @@
           </div>
         </div>
         <button type="button" id="btn-line-gate" class="btn-line" onclick="onLineRegister()">📩 LINEで結果を受け取る（無料）</button>
-        <p class="gate-note">※ ボタンを押すと結果を表示＆LINEが開きます</p>
+        <p class="gate-note">※ LINEのトーク画面で「送信」を押すと、診断結果が届きます</p>
       </div>
 
       <div class="result-restart" style="margin-bottom:32px;">
@@ -796,6 +796,7 @@
     };
 
     const LINE_URL = 'https://lin.ee/TZLZX4P';
+    const LINE_BASIC_ID = '625xqfxu'; // LINE公式アカウントのBasic ID（@なし）
 
     /* ===================================================
        状態管理
@@ -967,16 +968,28 @@
     }
 
     function onLineRegister() {
-      // URLハッシュに結果を保存（再表示用）
       const scores = DOMAIN_KEYS.map(k => state.scores[k]).join('-');
-      const hash = '#r/' + state.resultTypeId + '/' + scores;
-      history.replaceState(null, '', location.href.split('#')[0] + hash);
 
-      // まずLINEを開く
-      window.open(LINE_URL, '_blank');
+      // 診断結果をエンコードしたメッセージを作成
+      const msg = '診断:' + state.resultTypeId + ':' + scores;
 
-      // 結果を表示
-      showFullResult();
+      // LINE公式アカウントのチャット画面をメッセージ事前入力付きで開く
+      const lineUrl = 'https://line.me/R/oaMessage/' + LINE_BASIC_ID + '/?text=' + encodeURIComponent(msg);
+      window.open(lineUrl, '_blank');
+
+      // ゲート画面を「送信待ち」状態に切り替える
+      const btn = document.getElementById('btn-line-gate');
+      if (btn) {
+        btn.textContent = '✅ LINEが開きました！';
+        btn.disabled = true;
+      }
+      const note = document.querySelector('.gate-note');
+      if (note) {
+        note.innerHTML = '📩 LINEのトーク画面で<strong>「送信」ボタンを押してください</strong><br>すぐに診断結果が届きます！';
+        note.style.color = 'var(--color-primary)';
+        note.style.fontWeight = '700';
+        note.style.fontSize = '0.9rem';
+      }
     }
 
     function showFullResult() {
