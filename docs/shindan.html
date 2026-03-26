@@ -2305,6 +2305,9 @@ body {
       const hash = '#r/' + state.resultTypeId + '/' + scores;
       history.replaceState(null, '', location.href.split('#')[0] + hash);
 
+      // まずLINEを開く
+      window.open(LINE_URL, '_blank');
+
       // 結果を表示
       showFullResult();
     }
@@ -2365,8 +2368,10 @@ body {
       if (sendBtn) {
         sendBtn.onclick = () => {
           const resultUrl = location.href;
-          const msg = '私の診断結果です👇\n' + resultUrl + '\n\n面談について相談したいです！';
-          window.open('https://line.me/R/oaMessage/' + LINE_URL.split('/').pop() + '/?text=' + encodeURIComponent(msg), '_blank');
+          navigator.clipboard.writeText(resultUrl).catch(() => {});
+          window.open(LINE_URL, '_blank');
+          sendBtn.textContent = '✅ URLをコピーしました！LINEのトーク画面に貼り付けてください';
+          sendBtn.disabled = true;
         };
       }
 
