@@ -1962,7 +1962,7 @@ body {
       <div class="result-actions">
         <button type="button" id="btn-share" class="btn-share">📸 画像を保存してインスタでシェア</button>
         <p class="share-hint">保存後、インスタのストーリーに貼り付けてください</p>
-        <a id="btn-line-cta" href="#" class="btn-line" target="_blank" rel="noopener">📅 LINEで無料面談を予約する →</a>
+        <button type="button" id="btn-line-send" class="btn-line">📩 この結果をLINEに送って面談予約する →</button>
       </div>
 
       <div class="result-restart">
@@ -2303,15 +2303,10 @@ body {
       // URLハッシュに結果を保存（再表示用）
       const scores = DOMAIN_KEYS.map(k => state.scores[k]).join('-');
       const hash = '#r/' + state.resultTypeId + '/' + scores;
-      history.replaceState(null, '', hash);
+      history.replaceState(null, '', location.href.split('#')[0] + hash);
 
       // 結果を表示
       showFullResult();
-
-      // LINEを開く（少し遅らせてポップアップブロック回避）
-      setTimeout(() => {
-        window.open(LINE_URL, '_blank');
-      }, 300);
     }
 
     function showFullResult() {
@@ -2365,7 +2360,15 @@ body {
         '<div class="case-study-timeline">' + timelineItems + '</div>' +
         '<p class="case-study-cta">あなたにも、<em>整理すれば見えてくる「次の一手」</em>があります。<br>まず30分、話してみませんか？</p>';
 
-      document.getElementById('btn-line-cta').href = LINE_URL;
+      // 結果URL付きでLINEに送るボタン
+      const sendBtn = document.getElementById('btn-line-send');
+      if (sendBtn) {
+        sendBtn.onclick = () => {
+          const resultUrl = location.href;
+          const msg = '私の診断結果です👇\n' + resultUrl + '\n\n面談について相談したいです！';
+          window.open('https://line.me/R/oaMessage/' + LINE_URL.split('/').pop() + '/?text=' + encodeURIComponent(msg), '_blank');
+        };
+      }
 
       // URLボックスを表示
       const currentUrl = location.href.split('#')[0] + (location.hash || '');
