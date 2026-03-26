@@ -2309,7 +2309,7 @@ body {
 
       // LINEを即座に開く（awaitより前に呼ぶことでモバイルSafariのブロックを回避）
       const msg = 'SHINDAN-' + token;
-      const lineUrl = 'https://line.me/R/oaMessage/' + LINE_BASIC_ID + '/?text=' + encodeURIComponent(msg);
+      const lineUrl = 'https://line.me/R/oaMessage/@' + LINE_BASIC_ID + '/?text=' + encodeURIComponent(msg);
       location.href = lineUrl;
 
       // UI更新
